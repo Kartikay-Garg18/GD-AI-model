@@ -30,7 +30,7 @@ def analyze_transcript(req: TranscriptRequest):
 
     plain_text = analyze_transcript_plain(transcript)
     structured = analyze_transcript_structured(transcript)
-    structured_dict = structured.model_dump()  # ✅ Use Pydantic v2 serialization
+    structured_dict = structured.model_dump()  
 
     return TranscriptResponse(
         plain_text_analysis=plain_text,
@@ -43,6 +43,6 @@ def trending_gd_topics(
     top_k: int = Query(5, description="Number of topics to return")
 ):
     result = get_trending_gd_topics(category=category, top_k=top_k)
-    topics_as_dicts = [t.model_dump() for t in result.topics]  # ✅ Pydantic v2
+    topics_as_gdmodels = [GDTopic(**t.model_dump()) for t in result.topics]
+    return GDTopicsResponse(topics=topics_as_gdmodels)
 
-    return GDTopicsResponse(topics=topics_as_dicts)
