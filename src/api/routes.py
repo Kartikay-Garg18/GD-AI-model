@@ -6,11 +6,9 @@ from typing import List
 
 router = APIRouter()
 
-# Request model
 class TranscriptRequest(BaseModel):
     transcript: str
 
-# Response model
 class TranscriptResponse(BaseModel):
     plain_text_analysis: str
     structured_analysis: dict
@@ -20,7 +18,7 @@ class GDTopic(BaseModel):
     explanation: str = Field(..., description="Short explanation or context for the topic")
 
 class GDTopicsResponse(BaseModel):
-    topics: List[GDTopic]
+    topics: List[str]
 
 @router.post("/analyze", response_model=TranscriptResponse)
 def analyze_transcript(req: TranscriptRequest):
@@ -43,6 +41,5 @@ def trending_gd_topics(
     top_k: int = Query(5, description="Number of topics to return")
 ):
     result = get_trending_gd_topics(category=category, top_k=top_k)
-    topics_as_gdmodels = [GDTopic(**t.model_dump()) for t in result.topics]
-    return GDTopicsResponse(topics=topics_as_gdmodels)
-
+    topic_names = [t.topic for t in result.topics]
+    return GDTopicsResponse(topics=topic_names)
